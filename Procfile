@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* br.com.uldemy.api
+web: java $JAVA_OPTS -cp target/classes:target/dependency/* br.com.uldemy.api.ApiApplication
