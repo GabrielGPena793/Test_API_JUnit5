@@ -4,6 +4,7 @@ import br.com.uldemy.api.model.User;
 import br.com.uldemy.api.model.dto.UserDTO;
 import br.com.uldemy.api.repositories.UserRepsitory;
 import br.com.uldemy.api.service.UserService;
+import br.com.uldemy.api.service.exceptions.DataIntegratyViolationException;
 import br.com.uldemy.api.service.exceptions.ObjectNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(UserDTO userDTO) {
+        findByEmail(userDTO);
         return repsitory.save(mapper.map(userDTO, User.class));
     }
 
+    private void findByEmail(UserDTO userDTO){
+        Optional<User> user = repsitory.findByEmail(userDTO.getEmail());
+        if (user.isPresent()){
+            throw new DataIntegratyViolationException("E-mail já cadastrado no sistema");
+        }
+    }
 }
