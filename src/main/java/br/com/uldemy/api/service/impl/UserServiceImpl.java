@@ -3,6 +3,7 @@ package br.com.uldemy.api.service.impl;
 import br.com.uldemy.api.model.User;
 import br.com.uldemy.api.repositories.UserRepsitory;
 import br.com.uldemy.api.service.UserService;
+import br.com.uldemy.api.service.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> userModel = repsitory.findById(id);
 
-        return userModel.orElse(null);
+        return userModel.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
     }
 
 }
