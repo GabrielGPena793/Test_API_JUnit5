@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.swing.plaf.PanelUI;
 import java.net.URI;
 import java.util.List;
 
@@ -37,5 +36,11 @@ public class UserController {
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{id}").buildAndExpand(service.create(userDTO).getId()).toUri();
         return ResponseEntity.created(uri).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDTO> update(@PathVariable Integer id, @RequestBody UserDTO userDTO){
+        userDTO.setId(id);
+        return ResponseEntity.ok().body(mapper.map(service.update(userDTO), UserDTO.class));
     }
 }
