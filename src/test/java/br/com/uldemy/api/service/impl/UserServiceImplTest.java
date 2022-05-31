@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -23,12 +24,13 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class UserServiceImplTest {
 
-    public static final Integer ID                   = 1;
-    public static final String NAME                  = "Gabriel";
-    public static final String EMAIL                 = "gabriel@hotmail.com";
-    public static final String PASSWORD              = "123";
-    public static final String OBJETO_NAO_ENCONTRADO = "Objeto não encontrado";
-    public static final int INDEX                     = 0;
+    public static final Integer ID                              = 1;
+    public static final String NAME                             = "Gabriel";
+    public static final String EMAIL                            = "gabriel@hotmail.com";
+    public static final String PASSWORD                         = "123";
+    public static final String OBJETO_NAO_ENCONTRADO            = "Objeto não encontrado";
+    public static final String E_MAIL_JA_CADASTRADO_NO_SISTEMA  = "E-mail já cadastrado no sistema";
+    public static final int INDEX                               = 0;
 
     @InjectMocks
     private UserServiceImpl service;
@@ -63,7 +65,7 @@ class UserServiceImplTest {
 
     @Test
     void whenFindByIdThenReturnAnObjectNoFoundException(){
-        when(repsitory.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
+        when(repsitory.findById(anyInt())).thenReturn(empty());
 
         try {
             service.findById(ID);
@@ -112,9 +114,8 @@ class UserServiceImplTest {
             User response = service.create(userDTO);
         }catch (Exception e){
             assertEquals(DataIntegratyViolationException.class, e.getClass());
-            assertEquals("E-mail já cadastrado no sistema", e.getMessage());
+            assertEquals(E_MAIL_JA_CADASTRADO_NO_SISTEMA, e.getMessage());
         }
-
     }
 
     @Test
@@ -129,6 +130,20 @@ class UserServiceImplTest {
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
         assertEquals(PASSWORD, response.getPassword());
+    }
+
+    @Test
+    void whenUpdateThenReturnAnDataIntegrityViolationException() {
+        when(repsitory.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try {
+            optionalUser.get().setId(2);
+            User response = service.update(userDTO);
+        }catch (Exception e){
+            assertEquals(DataIntegratyViolationException.class, e.getClass());
+            assertEquals(E_MAIL_JA_CADASTRADO_NO_SISTEMA, e.getMessage());
+        }
+
     }
 
     @Test
